@@ -1,14 +1,17 @@
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import names
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt 
 
-categories = ['comp.graphics', 'comp.os.ms-windows.misc','comp.sys.ibm.pc.hardware',
- 'talk.religion.misc', 'comp.windows.x', 'comp.sys.mac.hardware']
-#categories = ['talk.religion.misc', 'comp.graphics', 'sci.space']
+
+# categories = ['comp.graphics', 'comp.os.ms-windows.misc','comp.sys.ibm.pc.hardware',
+#  'talk.religion.misc', 'comp.windows.x', 'comp.sys.mac.hardware']
+categories = ['talk.religion.misc', 'comp.graphics', 'sci.space', 'alt.atheism']
+
 features = 500
 
 def is_letter(word):
@@ -34,10 +37,13 @@ def preprocessing(data):
 
 def process_docs(groups, features):
 	data_cleaned = preprocessing(groups.data)
-	count_vector = CountVectorizer(stop_words='english', max_features=features)
-	data_cleaned_count = count_vector.fit_transform(groups.data)
+	#uses term-frequency 
+	#count_vector = CountVectorizer(stop_words='english', max_features=None, max_df=0.5, min_df=2)
+	#uses frequency inverse document frequency
+	tfidf_vector = TfidfVectorizer(stop_words='english', max_features=features, max_df=0.5, min_df=2)
+	data_cleaned_count = tfidf_vector.fit_transform(groups.data)
 	print('processing complete')
-	return data_cleaned_count
+	return data_cleaned_count, tfidf_vector
 
 
 def downloads():
@@ -63,8 +69,8 @@ def graph(data_cleaned_count, groups):
 def main():
 	# downloads() #just run once
 	groups = fetch_20newsgroups(categories=categories)
-	data_cleaned_count = process_docs(groups, features)
+	data_cleaned_count = process_docs(groups, features)[0]
 	graph(data_cleaned_count, groups)
 
 
-main()
+#main()

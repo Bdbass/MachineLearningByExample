@@ -117,7 +117,7 @@ def main():
 	elbow_method(1,6)
 	
 
-main()
+#main()
 
 
 
